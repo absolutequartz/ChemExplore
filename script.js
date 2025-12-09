@@ -1,16 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Get all table cells that contain element symbols (not empty, not colspan cells)
     const tableCells = document.querySelectorAll('table td');
     const elementCells = [];
-    
-    // Filter to only get cells with element symbols (single or double letters)
+
     tableCells.forEach(cell => {
         const text = cell.textContent.trim();
-        // Check if cell contains an element symbol (1-2 letters, not empty, not just whitespace)
         if (text && text.length <= 2 && text.match(/^[A-Z][a-z]?$/)) {
             elementCells.push(cell);
             
-            // Add data attributes if not present
             if (!cell.hasAttribute('data-symbol')) {
                 const elementData = getElementData(text);
                 if (elementData) {
@@ -23,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Create dropdown element
     const dropdown = document.createElement('div');
     dropdown.id = 'elementDropdown';
     dropdown.style.cssText = `
@@ -39,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
         font-family: Arial, sans-serif;
     `;
     
-    // Add dropdown content structure
     dropdown.innerHTML = `
         <div style="margin-bottom: 10px;">
             <h2 style="color: #2c3e50; font-size: 2em; margin: 0 0 5px 0; text-align: center;" id="dropdownSymbol"></h2>
@@ -70,13 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     `;
     
-    // Add dropdown to body
     document.body.appendChild(dropdown);
     
-    // Get dropdown elements
     const closeDropdownBtn = document.getElementById('closeDropdown');
     
-    // Function to get element data based on symbol
     function getElementData(symbol) {
         const elementDatabase = {
             'H': { name: 'Hydrogen', number: '1', weight: '1.008' },
@@ -180,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return null;
     }
     
-    // Function to show dropdown with element details
     function showElementDropdown(elementCell, event) {
         const symbol = elementCell.getAttribute('data-symbol');
         const name = elementCell.getAttribute('data-name');
@@ -192,16 +182,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Get period and group
         const periodRow = elementCell.parentElement;
         const period = periodRow.querySelector('th').textContent;
         
-        // Find group number by checking column index
         const cellIndex = Array.from(periodRow.children).indexOf(elementCell);
         const groupHeaders = document.querySelector('tr').children;
         let group = '';
         
-        // Find which group header corresponds to this column
         for (let i = 0; i < groupHeaders.length; i++) {
             if (groupHeaders[i].colSpan) {
                 const colspan = parseInt(groupHeaders[i].colSpan);
@@ -215,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Update dropdown content
         document.getElementById('dropdownSymbol').textContent = symbol;
         document.getElementById('dropdownName').textContent = name;
         document.getElementById('dropdownNumber').textContent = number;
@@ -223,26 +209,20 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('dropdownPeriod').textContent = period;
         document.getElementById('dropdownGroup').textContent = group || 'Not specified';
         
-        // Position dropdown below the clicked element
         const rect = elementCell.getBoundingClientRect();
         dropdown.style.top = (rect.bottom + window.scrollY + 5) + 'px';
         dropdown.style.left = (rect.left + window.scrollX - 100) + 'px'; // Center it
         
-        // Show dropdown
         dropdown.style.display = 'block';
         
-        // Prevent event bubbling
         event.stopPropagation();
     }
     
-    // Function to hide dropdown
     function hideElementDropdown() {
         dropdown.style.display = 'none';
     }
     
-    // Add hover effect and click events
     elementCells.forEach(cell => {
-        // Hover effect
         cell.addEventListener('mouseenter', function() {
             this.style.backgroundColor = '#3498db';
             this.style.color = 'white';
@@ -253,24 +233,19 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.color = 'black';
         });
         
-        // Click event for dropdown
         cell.addEventListener('click', function(event) {
             console.log('Clicked element:', this.textContent);
-            // Hide any existing dropdown first
             hideElementDropdown();
             
-            // Show new dropdown
             showElementDropdown(this, event);
         });
     });
     
-    // Close dropdown when clicking close button
     closeDropdownBtn.addEventListener('click', function(event) {
         hideElementDropdown();
         event.stopPropagation();
     });
     
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(event) {
         if (dropdown.style.display === 'block' && 
             !dropdown.contains(event.target)) {
@@ -278,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Close dropdown with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && dropdown.style.display === 'block') {
             hideElementDropdown();
